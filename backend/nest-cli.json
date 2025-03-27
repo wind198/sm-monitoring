@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "apps/central-web-server/src",
+  "compilerOptions": {
+    "deleteOutDir": true,
+    "webpack": true,
+    "tsConfigPath": "apps/central-web-server/tsconfig.app.json"
+  },
+  "monorepo": true,
+  "root": "apps/central-web-server",
+  "projects": {
+    "central-web-server": {
+      "type": "application",
+      "root": "apps/central-web-server",
+      "entryFile": "main",
+      "sourceRoot": "apps/central-web-server/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/central-web-server/tsconfig.app.json"
+      }
+    },
+    "check-agent": {
+      "type": "application",
+      "root": "apps/check-agent",
+      "entryFile": "main",
+      "sourceRoot": "apps/check-agent/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/check-agent/tsconfig.app.json"
+      }
+    },
+    "scheduler": {
+      "type": "application",
+      "root": "apps/scheduler",
+      "entryFile": "main",
+      "sourceRoot": "apps/scheduler/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/scheduler/tsconfig.app.json"
+      }
+    }
+  }
+}

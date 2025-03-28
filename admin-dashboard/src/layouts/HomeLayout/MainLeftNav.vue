@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { LinkOutlined, LocationOnOutlined, MonitorOutlined } from '@vicons/material'
-import useMainLeftNavWidth from '@/lib/components/MainLeftNav/useMainLeftNavWidth.ts'
+import useMainLeftNavWidth from '@/layouts/HomeLayout/MainLeftNav/useMainLeftNavWidth'
 import { NDrawer, NDrawerContent, NList, useThemeVars } from 'naive-ui'
-import type { INavItem } from '@/lib/components/MainLeftNav/nav-item.type.ts'
-import NavItem from '@/lib/components/MainLeftNav/NavItem.vue'
+import type { INavItem } from '@/layouts/HomeLayout/MainLeftNav/nav-item.type'
+import NavItem from '@/layouts/HomeLayout/MainLeftNav/NavItem.vue'
 
 const navList: INavItem[] = [
   {

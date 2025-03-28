@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { MonitorDocument } from 'apps/central-web-server/src/api/monitor/schemas/monitor.schema';
 import mongoose, { HydratedDocument } from 'mongoose';
 
-@Schema()
+@Schema({ _id: false })
 class Timing {
   @Prop({ required: true }) queuedAt: Date;
   @Prop({ required: true }) runAt: Date;
@@ -10,7 +10,7 @@ class Timing {
 
 const TimingSchema = SchemaFactory.createForClass(Timing);
 
-@Schema()
+@Schema({ _id: false })
 class Relation {
   @Prop({ required: true, type: mongoose.SchemaTypes.ObjectId, ref: 'Monitor' })
   monitor: MonitorDocument;

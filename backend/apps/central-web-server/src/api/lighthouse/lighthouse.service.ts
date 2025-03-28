@@ -80,7 +80,7 @@ export class LighthouseService {
   @Cron(IS_DEV ? CronExpression.EVERY_MINUTE : CronExpression.EVERY_5_MINUTES)
   async flushBuffer() {
     if (!this.lighthouseResultBuffer.length) return;
-    await this.lighthouseModel.bulkWrite(
+    const res = await this.lighthouseModel.bulkWrite(
       this.lighthouseResultBuffer.map((item) => ({
         insertOne: {
           document: item,
@@ -88,8 +88,6 @@ export class LighthouseService {
       })),
     );
     this.lighthouseResultBuffer = [];
-    Logger.debug(
-      `Flushed ${this.lighthouseResultBuffer.length} lighthouse result to DB`,
-    );
+    Logger.debug(`Flushed ${res.insertedCount} lighthouse result to DB`);
   }
 }

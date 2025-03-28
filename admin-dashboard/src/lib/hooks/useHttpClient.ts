@@ -1,14 +1,57 @@
 import { HttpClient } from '@/lib/constants/singletons/http-client'
-import type { AxiosRequestConfig } from 'axios'
+import type { AxiosError, AxiosRequestConfig } from 'axios'
+import { useMessage } from 'naive-ui'
+
+const extractMsgFromAxiosError = (e: AxiosError) => {
+  let output: any
+  if (e.response) {
+    // @ts-expect-error
+    output = e?.response?.data?.message || e?.response?.data?.error || e?.message
+  } else {
+    output = e?.message
+  }
+  if (typeof output === 'string') {
+    return output
+  }
+  if (Array.isArray(output)) {
+    return output.join(',')
+  }
+  return output.toString()
+}
 
 export default function useHttpClient() {
-  const $get = <T>(url: string, config?: AxiosRequestConfig) => HttpClient.get<T>(url, config)
+  const message = useMessage()
+
+  const $get = <T>(url: string, config?: AxiosRequestConfig) =>
+    HttpClient.get<T>(url, config)
+      .then((res) => res)
+      .catch((err) => {
+        message.error(extractMsgFromAxiosError(err))
+        throw err
+      })
 
   const $post = <T>(url: string, data: unknown, config?: AxiosRequestConfig) =>
     HttpClient.post<T>(url, data, config)
+      .then((res) => res)
+      .catch((err) => {
+        message.error(extractMsgFromAxiosError(err))
+        throw err
+      })
+
   const $put = <T>(url: string, data: unknown, config?: AxiosRequestConfig) =>
     HttpClient.put<T>(url, data, config)
-  const $delete = <T>(url: string, config?: AxiosRequestConfig) => HttpClient.delete<T>(url, config)
+      .then((res) => res)
+      .catch((err) => {
+        message.error(extractMsgFromAxiosError(err))
+        throw err
+      })
+  const $delete = <T>(url: string, config?: AxiosRequestConfig) =>
+    HttpClient.delete<T>(url, config)
+      .then((res) => res)
+      .catch((err) => {
+        message.error(extractMsgFromAxiosError(err))
+        throw err
+      })
 
   return {
     $get,

@@ -25,3 +25,8 @@ export const formatProgressMessage = {
     return `❌ Error: ${message}`;
   },
 };
+
+export const formatDateTimestamp = (timestamp: number) => {
+  if (!timestamp) return '';
+  return new Date(timestamp).toISOString();
+};

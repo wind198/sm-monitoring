@@ -46,7 +46,7 @@ export class AppService {
     };
   }
 
-  @Cron(CronExpression.EVERY_5_MINUTES)
+  @Cron(IS_DEV ? CronExpression.EVERY_MINUTE : CronExpression.EVERY_5_MINUTES)
   async scheduleJob() {
     const { currentHour, currentTimeWindow } =
       this.determineCurrentHourAndCurrentTimeWindow();
@@ -93,13 +93,13 @@ export class AppService {
     const monitorToRunInThisTimeWindow =
       await monitorToRunInThisTimeWindowQuery.toArray();
 
-    console.log(JSON.stringify(monitorToRunInThisTimeWindow));
+    console.log(JSON.stringify({ monitorToRunInThisTimeWindow, skip, limit }));
 
     for (const monitor of monitorToRunInThisTimeWindow) {
       await sleep(100);
       const locationListToRun: string[] = get(
         monitor,
-        'settings.locationList',
+        'settings.locations',
         [],
       ).map((i) => i.toString());
       if (!locationListToRun.length) {

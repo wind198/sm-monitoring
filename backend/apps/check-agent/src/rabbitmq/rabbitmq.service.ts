@@ -2,23 +2,31 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Channel, ChannelModel, ConsumeMessage, Replies } from 'amqplib';
 import * as chromeLauncher from 'chrome-launcher';
 import lighthouse from 'lighthouse';
-import { defer, from, map, retry, tap } from 'rxjs';
+import { from, map, retry, tap } from 'rxjs';
 
-import { DesktopConfig } from 'apps/check-agent/lighthouse-config/index';
+import {
+  DesktopConfig,
+  SimpleDesktopConfig,
+} from 'apps/check-agent/lighthouse-config/index';
 import {
   DELARE_MONITOR_JOB_QUEUE_ARGS,
   DELARE_MONITOR_JOB_RESULT_QUEUE_ARGS,
+  IS_DEV,
   LOCATION,
 } from 'libs/constants/src/envs';
 import {
   MONITOR_JOB_QUEUE,
   MONITOR_JOB_RESULT_QUEUE,
 } from 'libs/constants/src/keys';
-import { formatProgressMessage } from 'libs/helpers/src/formaters';
+import {
+  formatDateTimestamp,
+  formatProgressMessage,
+} from 'libs/helpers/src/formaters';
+import { sleep } from 'libs/helpers/src/others';
 import { connectToRabbitmq } from 'libs/helpers/src/rabbitmq';
-import { get } from 'lodash';
+import { get, range } from 'lodash';
 import { promisify } from 'util';
-import { gunzip, brotliCompress } from 'zlib';
+import { brotliCompress, gunzip } from 'zlib';
 const brotliCompressAsync = promisify(brotliCompress);
 const gunzipAsync = promisify(gunzip);
 @Injectable()
@@ -78,7 +86,7 @@ export class RabbitmqService {
       this.monitorJobQueue.queue,
       (msg) => {
         Logger.debug(
-          `Received message with ID ${msg?.properties.messageId} from queue ${this.monitorJobQueue.queue} @ ${msg?.properties.timestamp}`,
+          `Received message from queue ${this.monitorJobQueue.queue} @ ${formatDateTimestamp(msg?.properties.timestamp)}`,
         );
         void this.onMonitorJob(msg);
       },
@@ -123,12 +131,22 @@ export class RabbitmqService {
   async processMonitorJob(jobContent: any) {
     const { monitor } = jobContent;
     const checkRunCount = get(monitor, ['settings', 'checkRunCount'], 3);
-    const result = [] as any[];
-    for (let i = 0; i < checkRunCount; i++) {
-      const lighthouseRes = await this.runLighthouseCheck(monitor);
-      result.push(lighthouseRes);
-    }
-    void this.sendMonitorResultToQueue(monitor._id, result);
+
+    const runAt = new Date().getTime();
+    const result = (
+      await Promise.allSettled(
+        range(checkRunCount).map(async (_, i) => {
+          await sleep(i * 5000);
+          const lighthouseRes = await this.runLighthouseCheck(monitor);
+          return lighthouseRes;
+        }),
+      )
+    ).map((r, index) => ({
+      ok: r.status === 'fulfilled',
+      runIndex: index,
+      result: r.status === 'fulfilled' ? r.value : null,
+    }));
+    void this.sendMonitorResultToQueue(monitor._id, result, runAt);
   }
 
   async runLighthouseCheck(monitor: any) {
@@ -141,7 +159,7 @@ export class RabbitmqService {
         logLevel: 'info',
         output: 'json',
       },
-      DesktopConfig,
+      IS_DEV ? SimpleDesktopConfig : DesktopConfig,
     );
 
     chrome.kill();
@@ -165,13 +183,13 @@ export class RabbitmqService {
     if (this.channelModel) void this.channelModel.close();
   }
 
-  async sendMonitorResultToQueue(monitor: string, result: any) {
+  async sendMonitorResultToQueue(monitor: string, result: any, runAt: number) {
     const content = JSON.stringify(result);
     const buffer = await brotliCompressAsync(content);
     const ok = this.monitorJobResultQueueChannel.sendToQueue(
       this.monitorJobResultQueue.queue,
       buffer,
-      { headers: { monitor }, timestamp: new Date().getTime() },
+      { headers: { monitor, runAt }, timestamp: new Date().getTime() },
     );
     if (!ok) {
       Logger.error('Failed to send message to queue');

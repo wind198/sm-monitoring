@@ -39,6 +39,16 @@ const router = createRouter({
           },
         },
         {
+          name: 'show-monitor',
+          path: '/monitors/:id',
+          component: () => import('@/views/managements/Monitors/ShowMonitor.vue'),
+          meta: {
+            title: {
+              text: 'Monitor detail',
+            },
+          },
+        },
+        {
           name: 'create-monitor',
           path: '/monitors/create',
           component: () => import('@/views/managements/Monitors/CreateMonitor.vue'),

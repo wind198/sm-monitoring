@@ -18,8 +18,8 @@ import {
   type PaginationProps,
   type SelectOption,
 } from 'naive-ui'
-import { computed, ref, toRefs, useAttrs, type Ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { computed, ref, toRaw, toRefs, useAttrs, type HTMLAttributes, type Ref } from 'vue'
+import { useRoute, useRouter, type HistoryState } from 'vue-router'
 
 type IProps = IHasResource & {
   columns: DataTableColumn[]
@@ -32,6 +32,8 @@ const props = defineProps<IProps>()
 
 const currentRoue = useRoute()
 
+const router = useRouter()
+
 const createRoute = computed(() => {
   if (!props.hasCreate) return
   return currentRoue.path.replace(/\$/, '').concat('/create')
@@ -41,6 +43,19 @@ const { resource, resourcePlural, columns } = toRefs(props)
 const { handleClickOnInnerLink } = useClickOnInnerLink()
 
 const rowKey = (row: IRecord) => row._id
+
+const getRowProps = (rowData: object, rowIndex: number) =>
+  ({
+    onClick: (e: MouseEvent) => {
+      e.preventDefault()
+      const record = toRaw(rowData)
+      router.push({
+        path: `${resourcePlural.value}/${rowKey(rowData as IRecord)}`,
+        // @ts-expect-error
+        state: { record },
+      })
+    },
+  }) as HTMLAttributes
 
 const attrs = useAttrs()
 
@@ -156,6 +171,7 @@ const { data, isLoading } = useGetList({
       @update:sorter="handleSorterChange"
       @update:page="handlePageChange"
       v-bind="attrs"
+      :row-props="getRowProps"
     >
     </n-data-table>
   </div>

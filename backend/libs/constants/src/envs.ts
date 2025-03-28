@@ -42,7 +42,7 @@ export const CHECK_TIME_WINDOW = 5; // minutes
 /** SCHEDULER */
 
 /** CHECK AGENT */
-export const LOCATION = process.env.LOCATION || 'unknown';
+export const LOCATION = process.env.LOCATION || 'us_east';
 
 /** CHECK AGENT */
 

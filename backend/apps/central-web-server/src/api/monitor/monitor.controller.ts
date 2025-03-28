@@ -19,6 +19,11 @@ import { QsQueryObject } from 'apps/central-web-server/src/common/class-validato
 export class MonitorController {
   constructor(private readonly monitorService: MonitorService) {}
 
+  getAugmentedPopulate(populate: string[]) {
+    if (!populate?.length) return populate;
+    return populate.filter((i) => i !== 'settings.locations');
+  }
+
   @Post()
   async createOne(@Body() data: CreateMonitorDto) {
     return await this.monitorService.createMonitor(data);
@@ -28,13 +33,22 @@ export class MonitorController {
   async getList(@QsQuery() query: QsQueryObject) {
     const { filters, pagination, populate, sort } = query;
 
+    let command = this.monitorService.monitorModel
+      .find(filters)
+      .skip((pagination.page - 1) * pagination.pageSize)
+      .limit(pagination.pageSize)
+      .populate(this.getAugmentedPopulate(populate))
+      .sort(formatSortForMongoose(sort));
+    if (populate?.includes('settings.locations')) {
+      command = command.populate({
+        path: 'settings.locations',
+        model: 'Location',
+        localField: 'settings.locations',
+        foreignField: 'code',
+      });
+    }
     const [res, count] = await Promise.all([
-      this.monitorService.monitorModel
-        .find(filters)
-        .skip((pagination.page - 1) * pagination.pageSize)
-        .limit(pagination.pageSize)
-        .populate(populate)
-        .sort(formatSortForMongoose(sort)),
+      command.exec(),
       this.monitorService.monitorModel.countDocuments(filters),
     ]);
     return {
@@ -52,9 +66,19 @@ export class MonitorController {
   @Get('get-many')
   async getMany(@QsQuery() query: QsQueryObject) {
     const { populate, ids } = query;
-    const res = await this.monitorService.monitorModel
+    let command = this.monitorService.monitorModel
       .find({ _id: { $in: ids } })
-      .populate(populate);
+      .populate(this.getAugmentedPopulate(populate));
+    if (populate?.includes('settings.locations')) {
+      command = command.populate({
+        path: 'settings.locations',
+        model: 'Location',
+        localField: 'settings.locations',
+        foreignField: 'code',
+      });
+    }
+
+    const res = await command.exec();
 
     return { data: res };
   }
@@ -62,9 +86,19 @@ export class MonitorController {
   @Get(':id')
   async getOne(@Param('id') id: string, @QsQuery() query: QsQueryObject) {
     const { populate } = query;
-    const res = await this.monitorService.monitorModel
+    let command = this.monitorService.monitorModel
       .findById(id)
-      .populate(populate);
+      .populate(this.getAugmentedPopulate(populate));
+    if (populate?.includes('settings.locations')) {
+      command = command.populate({
+        path: 'settings.locations',
+        model: 'Location',
+        localField: 'settings.locations',
+        foreignField: 'code',
+      });
+    }
+
+    const res = await command.exec();
 
     return { data: res };
   }

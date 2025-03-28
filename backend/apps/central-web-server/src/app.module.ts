@@ -7,6 +7,7 @@ import { MONGO_URL } from 'libs/constants/src/envs';
 import { LocationService } from 'apps/central-web-server/src/api/location/location.service';
 import { RabbitmqModule } from 'apps/central-web-server/src/api/rabbitmq/rabbitmq.module';
 import { formatProgressMessage } from 'libs/helpers/src/formaters';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { formatProgressMessage } from 'libs/helpers/src/formaters';
     MongooseModule.forRoot(MONGO_URL, {
       enableUtf8Validation: false,
     }),
+    ScheduleModule.forRoot(),
   ],
 })
 export class AppModule implements OnModuleInit {

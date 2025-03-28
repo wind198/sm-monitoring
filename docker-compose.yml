@@ -1,0 +1,36 @@
+version: '3.4'
+
+volumes:
+  mongo_data: {}
+
+networks:
+  back-tier:
+
+
+services:
+  redis:
+    networks:
+      - back-tier
+    ports:
+      - 6379:6379
+    image: redis:latest
+
+  rabbit:
+    networks:
+      - back-tier
+    ports:
+      - 15672:15672
+      - 5672:5672
+    image: rabbitmq:3-management
+
+  
+  mongo:
+    image: mongo
+    networks:
+      - back-tier
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo_data:/data/db
+
+  

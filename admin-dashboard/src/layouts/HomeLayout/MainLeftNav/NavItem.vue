@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { INavItem } from '@/lib/components/MainLeftNav/nav-item.type.ts'
+import type { INavItem } from '@/layouts/HomeLayout/MainLeftNav/nav-item.type'
 import useClickOnInnerLink from '@/lib/hooks/useClickOnInnerLink.ts'
 import { NIcon, NList, NListItem } from 'naive-ui'
 

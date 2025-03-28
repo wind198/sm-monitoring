@@ -9,7 +9,10 @@ import {
   MANUAL_MONITOR_JOB_QUEUE,
   MONITOR_JOB_QUEUE,
 } from 'libs/constants/src/keys';
-import { formatProgressMessage } from 'libs/helpers/src/formaters';
+import {
+  formatDateTimestamp,
+  formatProgressMessage,
+} from 'libs/helpers/src/formaters';
 import { connectToRabbitmq } from 'libs/helpers/src/rabbitmq';
 import { Collection, Connection, Types } from 'mongoose';
 import { from, map, retry, tap } from 'rxjs';
@@ -83,7 +86,7 @@ export class RabbitmqService {
       this.manualMonitorJobQueue.queue,
       (msg) => {
         Logger.debug(
-          `Received message with ID ${msg?.properties.messageId} from queue ${this.manualMonitorJobQueue.queue} @ ${msg?.properties.timestamp}`,
+          `Received message from queue ${this.manualMonitorJobQueue.queue} @ ${formatDateTimestamp(msg?.properties.timestamp)}`,
         );
         if (msg) {
           void this.onManualMonitorJob(msg);

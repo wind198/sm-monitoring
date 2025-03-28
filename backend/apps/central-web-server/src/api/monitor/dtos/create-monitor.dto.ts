@@ -1,4 +1,3 @@
-import { LocationDocument } from 'apps/central-web-server/src/api/location/schemas/location.schema';
 import {
   Monitor,
   Setting,
@@ -7,7 +6,6 @@ import { Type } from 'class-transformer';
 import {
   IsBoolean,
   IsDefined,
-  IsMongoId,
   IsObject,
   IsOptional,
   IsString,
@@ -16,7 +14,7 @@ import {
 } from 'class-validator';
 
 export class CreateMonitorDtoSetting implements Setting {
-  @IsMongoId({ each: true }) locations: string[];
+  @IsString({ each: true }) locations: string[];
   @IsOptional() @IsBoolean() isActive: boolean;
   runHours: number[];
   @IsDefined()

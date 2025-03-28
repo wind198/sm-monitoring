@@ -3,13 +3,12 @@ import { LocationDocument } from 'apps/central-web-server/src/api/location/schem
 import { IIsActive } from 'apps/central-web-server/src/common/types/is-active';
 import mongoose, { HydratedDocument } from 'mongoose';
 
-@Schema()
+@Schema({ _id: false })
 export class Setting implements IIsActive {
   @Prop({
     required: true,
     ref: 'Location',
     type: [String],
-    refPath: 'code',
   })
   locations: string[];
 
@@ -50,7 +49,7 @@ export class Monitor {
 
   @Prop({ type: SettingSchema, required: true }) settings: Setting;
 
-  @Prop({ type: MetadataSchema, required: true }) metadata: Setting;
+  @Prop({ type: MetadataSchema }) metadata: Setting;
 }
 
 export type MonitorDocument = HydratedDocument<Monitor>;

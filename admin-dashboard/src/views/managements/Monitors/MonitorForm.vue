@@ -5,14 +5,7 @@ import useCreateOne from '@/lib/hooks/useCreateOne'
 import useGetOne from '@/lib/hooks/useGetOne'
 import useUpdateOne from '@/lib/hooks/useUpdateOne'
 import type { IRecord } from '@/types/record'
-import {
-  NForm,
-  NFormItem,
-  NInput,
-  useMessage,
-  type FormInst,
-  type FormRules,
-} from 'naive-ui'
+import { NForm, NFormItem, NInput, useMessage, type FormInst, type FormRules } from 'naive-ui'
 import { ref, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import SelectLocations from '@/lib/components/common/SelectLocations.vue'
@@ -70,11 +63,19 @@ const rules: FormRules = {
   name: [
     {
       required: true,
+      message: 'Name is required',
     },
   ],
-  code: [
+  url: [
     {
       required: true,
+      message: 'URL is required',
+    },
+  ],
+  'settings.locations': [
+    {
+      required: true,
+      message: 'Please select at least one location',
     },
   ],
 }
@@ -92,23 +93,23 @@ const { mutateAsync: updateMonitor } = useUpdateOne({
 
 const handleSumit = async (e: Event) => {
   e.preventDefault()
-  formRef.value?.validate((errors) => {
+  formRef.value?.validate(async (errors) => {
     if (errors) {
       message.error('Invalid form inputs')
       return
     }
-  })
-  const data = formValue.value
-  if (!props.isEdit) {
-    await createMonitor(data)
-    message.success('Monitor created successfully')
+    const data = formValue.value
+    if (!props.isEdit) {
+      await createMonitor(data)
+      message.success('Monitor created successfully')
 
-    router.push('/check-monitors')
-  } else if (props.record?._id) {
-    await updateMonitor(data)
-    message.success('Monitor updated successfully')
-    router.back()
-  }
+      router.push('/monitors')
+    } else if (props.record?._id) {
+      await updateMonitor(data)
+      message.success('Monitor updated successfully')
+      router.back()
+    }
+  })
 }
 </script>
 <template>
@@ -121,13 +122,13 @@ const handleSumit = async (e: Event) => {
     @submit="handleSumit"
   >
     <NFormItem label="Name" path="name">
-      <NInput v-model:value="formValue.name" placeholder="Monitor name" />
+      <NInput v-model:value="formValue.name" />
     </NFormItem>
     <NFormItem label="URL" path="url">
-      <NInput v-model:value="formValue.url" placeholder="Monitor URL" />
+      <NInput v-model:value="formValue.url" placeholder="https://" />
     </NFormItem>
     <NFormItem label="Check locations" path="settings.locations">
-      <SelectLocations placeholder="Select check locations" v-model="formValue.settings.locations" />
+      <SelectLocations v-model="formValue.settings.locations" />
     </NFormItem>
     <NFormItem label="Check frequency" path="settings.frequency">
       <SelectCheckFrequency v-model="formValue.settings.frequency" />

@@ -130,23 +130,32 @@ export class RabbitmqService {
 
   async processMonitorJob(jobContent: any) {
     const { monitor } = jobContent;
-    const checkRunCount = get(monitor, ['settings', 'checkRunCount'], 3);
+    const checkRunCount = get(monitor, ['settings', 'checkRunCount'], 1);
 
     const runAt = new Date().getTime();
-    const result = (
-      await Promise.allSettled(
-        range(checkRunCount).map(async (_, i) => {
-          await sleep(i * 5000);
-          const lighthouseRes = await this.runLighthouseCheck(monitor);
-          return lighthouseRes;
-        }),
-      )
-    ).map((r, index) => ({
-      ok: r.status === 'fulfilled',
-      runIndex: index,
-      result: r.status === 'fulfilled' ? r.value : null,
-    }));
-    void this.sendMonitorResultToQueue(monitor._id, result, runAt);
+    const testResult = [] as any[];
+    for (let index = 0; index < checkRunCount; index++) {
+      try {
+        const lighthouseRes = await this.runLighthouseCheck(monitor);
+        if (!lighthouseRes) {
+          throw new Error('Lighthouse return no result');
+        }
+        testResult.push({ status: 'fulfilled', value: lighthouseRes?.lhr });
+      } catch (error) {
+        testResult.push({ status: 'rejected', reason: error });
+      }
+    }
+    const result = testResult.map((r, index) => {
+      if (r.status === 'rejected') {
+        Logger.error(r.reason);
+      }
+      return {
+        ok: r.status === 'fulfilled',
+        runIndex: index,
+        result: r.status === 'fulfilled' ? r.value : null,
+      };
+    });
+    await this.sendMonitorResultToQueue(monitor._id, result, runAt);
   }
 
   async runLighthouseCheck(monitor: any) {
@@ -159,7 +168,7 @@ export class RabbitmqService {
         logLevel: 'info',
         output: 'json',
       },
-      IS_DEV ? SimpleDesktopConfig : DesktopConfig,
+      DesktopConfig,
     );
 
     chrome.kill();

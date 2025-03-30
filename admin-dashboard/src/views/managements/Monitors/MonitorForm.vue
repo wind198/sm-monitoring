@@ -1,26 +1,34 @@
 <script setup lang="ts">
-import { faker } from '@faker-js/faker'
 import FormActions from '@/lib/components/common/FormActions.vue'
+import SelectLocations from '@/lib/components/common/SelectLocations.vue'
 import useCreateOne from '@/lib/hooks/useCreateOne'
 import useGetOne from '@/lib/hooks/useGetOne'
+import useSyncGlobalLoading from '@/lib/hooks/useSyncGlobalLoading.ts'
 import useUpdateOne from '@/lib/hooks/useUpdateOne'
-import type { IRecord } from '@/types/record'
+import SelectCheckFrequency from '@/views/managements/Monitors/SelectCheckFrequency.vue'
+import { faker } from '@faker-js/faker'
+import { get } from 'lodash-es'
 import { NForm, NFormItem, NInput, useMessage, type FormInst, type FormRules } from 'naive-ui'
 import { ref, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import SelectLocations from '@/lib/components/common/SelectLocations.vue'
-import SelectCheckFrequency from '@/views/managements/Monitors/SelectCheckFrequency.vue'
 
 const formRef = ref<FormInst | null>(null)
 
-const props = defineProps<{ record?: IRecord; isEdit?: boolean }>()
+const props = defineProps<{ isEdit?: boolean }>()
+
+const state = history.state
+
+const record = ref(get(state, 'record'))
 
 const route = useRoute()
+
+const id = ref(route.params.id as string)
+
 const router = useRouter()
 
 const formValue = ref(
-  props.isEdit && props.record
-    ? props.record
+  props.isEdit
+    ? record
     : {
         name: '',
         url: '',
@@ -33,22 +41,19 @@ const formValue = ref(
 
 const mockMonitor = () => {
   formValue.value = {
-    name: faker.lorem.words(2),
-    url: faker.internet.url(),
+    name: 'Niteco',
+    url: 'https://niteco.com',
     settings: {
-      locations: [],
+      locations: ['us_east'],
       frequency: 'every_day',
     },
   }
 }
 
-const { data: trueRecord } = useGetOne({
+const { data: trueRecord, isLoading } = useGetOne({
   resource: 'monitor',
   resourcePlural: 'monitors',
   id: route.params.id as string,
-  queryOptions: {
-    initialData: props.record,
-  } as any,
 })
 
 watchEffect(() => {
@@ -56,6 +61,8 @@ watchEffect(() => {
     formValue.value = trueRecord.value.data
   }
 })
+
+useSyncGlobalLoading(isLoading)
 
 const message = useMessage()
 
@@ -88,7 +95,7 @@ const { mutateAsync: createMonitor } = useCreateOne({
 const { mutateAsync: updateMonitor } = useUpdateOne({
   resource: 'monitor',
   resourcePlural: 'monitors',
-  id: props.record?._id!,
+  id: id,
 })
 
 const handleSumit = async (e: Event) => {
@@ -104,7 +111,7 @@ const handleSumit = async (e: Event) => {
       message.success('Monitor created successfully')
 
       router.push('/monitors')
-    } else if (props.record?._id) {
+    } else if (id.value) {
       await updateMonitor(data)
       message.success('Monitor updated successfully')
       router.back()

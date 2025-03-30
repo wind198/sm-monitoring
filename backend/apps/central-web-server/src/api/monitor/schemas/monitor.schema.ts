@@ -1,35 +1,32 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { LocationDocument } from 'apps/central-web-server/src/api/location/schemas/location.schema';
-import { IIsActive } from 'apps/central-web-server/src/common/types/is-active';
+import { ProjectDocument } from 'apps/central-web-server/src/api/project/schemas/project.schema';
+import { SiteDocument } from 'apps/central-web-server/src/api/site/schemas/site.schema';
+import { ISoftDeletable } from 'apps/central-web-server/src/common/types/soft-deletable';
+import { ILighthouseScores } from 'libs/types/src/check';
 import mongoose, { HydratedDocument } from 'mongoose';
 
 @Schema({ _id: false })
-export class Setting implements IIsActive {
+export class Relations {
   @Prop({
     required: true,
-    ref: 'Location',
-    type: [String],
+    ref: 'Project',
+    type: mongoose.SchemaTypes.ObjectId,
   })
-  locations: string[];
+  project: ProjectDocument;
 
-  @Prop({ default: true })
-  isActive: boolean;
-
-  @Prop({ required: true }) runHours: number[];
-
-  @Prop({ required: true, type: mongoose.Schema.Types.Mixed })
-  frequency: string | number;
-
-  @Prop({ type: mongoose.Schema.Types.Mixed })
-  lighthouseConfig: any;
-
-  @Prop()
-  deletedAt?: Date;
+  @Prop({
+    required: true,
+    ref: 'Site',
+    type: mongoose.SchemaTypes.ObjectId,
+  })
+  site: SiteDocument;
 }
 
-const SettingSchema = SchemaFactory.createForClass(Setting);
+const RelationSchema = SchemaFactory.createForClass(Relations);
 
-class Metadata {
+@Schema({ _id: false })
+export class Metadata {
   @Prop({
     required: true,
     ref: 'Location',
@@ -41,24 +38,39 @@ class Metadata {
 
 const MetadataSchema = SchemaFactory.createForClass(Metadata);
 
+@Schema({ _id: false })
+export class LatestData {
+  @Prop({ required: true, type: mongoose.SchemaTypes.Mixed })
+  scoreHistory: {
+    timestamp: string;
+    date: string;
+    scores: ILighthouseScores;
+    checkId: string;
+  }[];
+
+  @Prop() thumbnail: string;
+}
+
+const LatestDataSchema = SchemaFactory.createForClass(LatestData);
+
 @Schema()
-export class Monitor {
+export class Monitor implements ISoftDeletable {
+  @Prop()
+  deletedAt: Date;
+
   @Prop({ required: true }) url: string;
 
   @Prop({ required: true }) name: string;
 
-  @Prop({ type: SettingSchema, required: true }) settings: Setting;
+  @Prop({ type: MetadataSchema }) metadata: Metadata;
 
-  @Prop({ type: MetadataSchema }) metadata: Setting;
+  @Prop({ type: LatestDataSchema, default: { scoreHistory: [] } })
+  latestData: LatestData;
+
+  @Prop({ required: true, type: RelationSchema })
+  relations: Relations;
 }
 
 export type MonitorDocument = HydratedDocument<Monitor>;
 
 export const MonitorSchema = SchemaFactory.createForClass(Monitor);
-
-MonitorSchema.index({
-  'settings.deletedAt': 1,
-  'settings.isActive': 1,
-  'settings.runHours': 1,
-});
-MonitorSchema.index({ 'settings.locations': 1 });

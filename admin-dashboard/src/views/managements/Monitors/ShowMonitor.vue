@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import useClickOnInnerLink from '@/lib/hooks/useClickOnInnerLink.ts'
 import useGetOne from '@/lib/hooks/useGetOne.ts'
-import { useGlobalLoading } from '@/stores/global-loading.ts'
+import useSyncGlobalLoading from '@/lib/hooks/useSyncGlobalLoading.ts'
+import { EditOutlined } from '@vicons/material'
 import { get, lowerCase, upperFirst } from 'lodash-es'
-import { NDescriptions, NDescriptionsItem, NTag } from 'naive-ui'
+import { NDescriptions, NDescriptionsItem, NIcon, NTag } from 'naive-ui'
 import { computed, ref, watchEffect } from 'vue'
-import { useRoute } from 'vue-router'
+import { RouterLink, useRoute } from 'vue-router'
 
 const state = history.state
 
@@ -22,17 +23,13 @@ const { data: trueRecord, isLoading } = useGetOne({
   populate: ['settings.locations'],
 })
 
-const { setIsGlobalLoading } = useGlobalLoading()
-
 watchEffect(() => {
   if (trueRecord.value) {
     record.value = get(trueRecord.value, 'data')
   }
 })
 
-watchEffect(() => {
-  setIsGlobalLoading(isLoading.value)
-})
+useSyncGlobalLoading(isLoading)
 
 const checkLocations = computed(() => {
   const raw = get(record.value, 'settings.locations')
@@ -53,6 +50,16 @@ const { handleClickOnInnerLink } = useClickOnInnerLink()
 </script>
 <template>
   <NDescriptions v-if="record" :columns="3">
+    <Teleport to="#page-title-actions">
+      <NButton type="primary" @click="handleClickOnInnerLink">
+        <RouterLink :to="{ path: 'edit' }">
+          <NIcon class="mr-2">
+            <EditOutlined />
+          </NIcon>
+          Edit</RouterLink
+        >
+      </NButton>
+    </Teleport>
     <NDescriptionsItem>
       <template #label> Name </template>
       {{ get(record, 'name') }}
@@ -75,7 +82,7 @@ const { handleClickOnInnerLink } = useClickOnInnerLink()
           v-for="i in checkLocations"
           :key="i.code"
         >
-          <RouterLink :to="'/check-locations/' + i._id" class="text-blue-500">
+          <RouterLink :to="'/locations/' + i._id" class="text-blue-500">
             {{ i.name }}
           </RouterLink>
         </NTag>

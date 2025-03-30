@@ -15,7 +15,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { DEFAULT_PAGE_SIZE } from 'libs/constants/src/others';
-import { GET_MANY_MAX_LENGTH } from 'libs/constants/src/validations';
+import { GET_MANY_MAX_LENGTH } from 'apps/central-web-server/src/common/constants/validations';
 
 // Validate the parsed object by qs
 

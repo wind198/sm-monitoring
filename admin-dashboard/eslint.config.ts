@@ -39,6 +39,7 @@ export default defineConfigWithVueTs(
       ],
       // disable any related ts rules
       '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/ban-ts-comment': 'off',
     },
   },
 )

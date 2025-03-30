@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { MonitorDocument } from 'apps/central-web-server/src/api/monitor/schemas/monitor.schema';
+import { ILighthouseScores } from 'libs/types/src/check';
 import mongoose, { HydratedDocument } from 'mongoose';
 
 @Schema({ _id: false })
@@ -19,7 +20,7 @@ class Relation {
 const RelationSchema = SchemaFactory.createForClass(Relation);
 
 @Schema({ timestamps: { createdAt: true, updatedAt: false } })
-export class Lighthouse {
+export class Check {
   @Prop({ required: true, select: false, type: Buffer })
   testResult: Buffer;
 
@@ -27,10 +28,13 @@ export class Lighthouse {
 
   @Prop({ required: true, type: TimingSchema })
   timing: Timing;
+
+  @Prop({ required: true, type: mongoose.SchemaTypes.Mixed })
+  scores: ILighthouseScores;
 }
 
-export type LighthouseDocument = HydratedDocument<Lighthouse>;
+export type CheckDocument = HydratedDocument<Check>;
 
-export const LighthouseSchema = SchemaFactory.createForClass(Lighthouse);
+export const CheckSchema = SchemaFactory.createForClass(Check);
 
-LighthouseSchema.index({ monitor: 1 });
+CheckSchema.index({ monitor: 1 });

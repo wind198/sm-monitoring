@@ -93,8 +93,6 @@ export class AppService {
     const monitorToRunInThisTimeWindow =
       await monitorToRunInThisTimeWindowQuery.toArray();
 
-    console.log(JSON.stringify({ monitorToRunInThisTimeWindow, skip, limit }));
-
     for (const monitor of monitorToRunInThisTimeWindow) {
       await sleep(100);
       const locationListToRun: string[] = get(

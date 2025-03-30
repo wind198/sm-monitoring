@@ -3,6 +3,7 @@ import SearchWithFieldSelection from '@/lib/components/common/ResourceAsyncTable
 import Spacer from '@/lib/components/common/Spacer.vue'
 import useClickOnInnerLink from '@/lib/hooks/useClickOnInnerLink'
 import useGetList from '@/lib/hooks/useGetList.ts'
+import useSyncGlobalLoading from '@/lib/hooks/useSyncGlobalLoading.ts'
 import type { IFilters } from '@/types/filters.ts'
 import type { IHasResource } from '@/types/has-resource.ts'
 import type { IRecord } from '@/types/record.ts'
@@ -19,7 +20,7 @@ import {
   type SelectOption,
 } from 'naive-ui'
 import { computed, ref, toRaw, toRefs, useAttrs, type HTMLAttributes, type Ref } from 'vue'
-import { useRoute, useRouter, type HistoryState } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 type IProps = IHasResource & {
   columns: DataTableColumn[]
@@ -50,7 +51,7 @@ const getRowProps = (rowData: object, rowIndex: number) =>
       e.preventDefault()
       const record = toRaw(rowData)
       router.push({
-        path: `${resourcePlural.value}/${rowKey(rowData as IRecord)}`,
+        path: `/${resourcePlural.value}/${rowKey(rowData as IRecord)}`,
         // @ts-expect-error
         state: { record },
       })
@@ -131,6 +132,7 @@ const { data, isLoading } = useGetList({
   pagination: pagination as any,
   sort,
 })
+useSyncGlobalLoading(isLoading)
 </script>
 <template>
   <div class="resource-async-table">

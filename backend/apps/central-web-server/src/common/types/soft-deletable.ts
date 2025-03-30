@@ -1,3 +1,3 @@
 export type ISoftDeletable = {
-  deletedAt?: Date;
+  deletedAt: Date;
 };

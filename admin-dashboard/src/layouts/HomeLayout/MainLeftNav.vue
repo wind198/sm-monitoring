@@ -1,19 +1,32 @@
 <script setup lang="ts">
-import { LinkOutlined, LocationOnOutlined, MonitorOutlined } from '@vicons/material'
-import useMainLeftNavWidth from '@/layouts/HomeLayout/MainLeftNav/useMainLeftNavWidth'
+import {
+  DashboardOutlined,
+  LinkOutlined,
+  LocationOnOutlined,
+  MonitorOutlined,
+} from '@vicons/material'
+import useMainLeftNavWidth from '@/lib/hooks/useMainLeftNavWidth'
 import { NDrawer, NDrawerContent, NList, useThemeVars } from 'naive-ui'
 import type { INavItem } from '@/layouts/HomeLayout/MainLeftNav/nav-item.type'
 import NavItem from '@/layouts/HomeLayout/MainLeftNav/NavItem.vue'
+import { useGlobalPanels } from '../../stores/global-panels.js'
+import { toRefs } from 'vue'
 
 const navList: INavItem[] = [
+  {
+    key: 'dashboard',
+    label: 'Dashboard',
+    to: '/',
+    icon: DashboardOutlined,
+  },
   {
     key: 'managements',
     label: 'Managements',
     children: [
       {
-        key: 'check-locations',
+        key: 'locations',
         label: 'Check locations',
-        to: '/check-locations',
+        to: '/locations',
         icon: LocationOnOutlined,
       },
       {
@@ -32,15 +45,17 @@ const navList: INavItem[] = [
   },
 ]
 
-const open = defineModel<boolean>({ default: true })
+const { currentWidth } = useMainLeftNavWidth()
 
-const { currentWidth } = useMainLeftNavWidth({ open })
+const { isMainLeftPanelOpen } = toRefs(useGlobalPanels())
+const { setMainLeftPanelOpen } = useGlobalPanels()
 
 const theme = useThemeVars()
 </script>
 <template>
   <NDrawer
-    v-model:show="open"
+    :show="isMainLeftPanelOpen"
+    @update:show="setMainLeftPanelOpen"
     class="main-left-nav"
     placement="left"
     :close-on-esc="false"
@@ -52,16 +67,16 @@ const theme = useThemeVars()
     <NDrawerContent>
       <template #header>
         <div class="main-left-nav__header-section flex items-center space-x-2">
-          <n-el
+          <div
             tag="span"
             :style="{ backgroundColor: theme.primaryColor }"
             class="aspect-square w-6 rounded"
-          >
-          </n-el>
+          ></div>
           <div class="header-section__text font-bold">SM Monitor</div>
         </div>
       </template>
       <NList class="!ml-[-8px]">
+        <!-- eslint-disable-next-line vue/valid-v-for -->
         <NavItem v-for="i in navList" v-bind="i"></NavItem>
       </NList>
     </NDrawerContent>

@@ -98,7 +98,7 @@ const handleSumit = async (e: Event) => {
       await createLocation(data)
       message.success('Location created successfully')
 
-      router.push('/check-locations')
+      router.push('/locations')
     } else if (props.record?._id) {
       await updateLocation(data)
       message.success('Location updated successfully')

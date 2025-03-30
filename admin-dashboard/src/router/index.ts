@@ -9,8 +9,17 @@ const router = createRouter({
       component: HomeLayout,
       children: [
         {
-          name: 'check-locations',
-          path: '/check-locations',
+          path: '',
+          component: () => import('@/views/Dashboard.vue'),
+          meta: {
+            title: {
+              text: 'Dashboard',
+            },
+          },
+        },
+        {
+          name: 'locations',
+          path: '/locations',
           component: () => import('@/views/managements/CheckLocations.vue'),
           meta: {
             title: {
@@ -19,8 +28,28 @@ const router = createRouter({
           },
         },
         {
-          name: 'create-check-location',
-          path: '/check-locations/create',
+          name: 'show-location',
+          path: '/locations/:id',
+          component: () => import('@/views/managements/CheckLocations/ShowLocation.vue'),
+          meta: {
+            title: {
+              text: 'Show Location',
+            },
+          },
+        },
+        {
+          name: 'edit-location',
+          path: '/locations/:id/edit',
+          component: () => import('@/views/managements/CheckLocations/EditCheckLocation.vue'),
+          meta: {
+            title: {
+              text: 'Edit Location',
+            },
+          },
+        },
+        {
+          name: 'create-location',
+          path: '/locations/create',
           component: () => import('@/views/managements/CheckLocations/CreateCheckLocation.vue'),
           meta: {
             title: {
@@ -45,6 +74,16 @@ const router = createRouter({
           meta: {
             title: {
               text: 'Monitor detail',
+            },
+          },
+        },
+        {
+          name: 'edit-monitor',
+          path: '/monitors/:id/edit',
+          component: () => import('@/views/managements/Monitors/EditMonitor.vue'),
+          meta: {
+            title: {
+              text: 'Edit monitor',
             },
           },
         },

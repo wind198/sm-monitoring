@@ -28,6 +28,15 @@
         "tsConfigPath": "apps/check-agent/tsconfig.app.json"
       }
     },
+    "result-processor": {
+      "type": "application",
+      "root": "apps/result-processor",
+      "entryFile": "main",
+      "sourceRoot": "apps/result-processor/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/result-processor/tsconfig.app.json"
+      }
+    },
     "scheduler": {
       "type": "application",
       "root": "apps/scheduler",

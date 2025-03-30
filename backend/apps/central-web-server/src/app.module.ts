@@ -1,7 +1,7 @@
 import { Logger, Module, OnModuleInit } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MonitorModule } from 'apps/central-web-server/src/api/monitor/monitor.module';
-import { LighthouseModule } from 'apps/central-web-server/src/api/lighthouse/lighthouse.module';
+import { LighthouseModule } from 'apps/central-web-server/src/api/check/lighthouse.module';
 import { LocationModule } from 'apps/central-web-server/src/api/location/location.module';
 import { MONGO_URL } from 'libs/constants/src/envs';
 import { LocationService } from 'apps/central-web-server/src/api/location/location.service';

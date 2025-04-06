@@ -2,7 +2,6 @@ import { Logger } from '@nestjs/common';
 import { connect } from 'amqplib';
 import { RabbitMQConnectionProps } from 'libs/constants/src/envs';
 import { formatProgressMessage } from 'libs/helpers/src/formaters';
-import { delay } from 'lodash';
 import { defer, retry, tap } from 'rxjs';
 
 export const connectToRabbitmq = () => {

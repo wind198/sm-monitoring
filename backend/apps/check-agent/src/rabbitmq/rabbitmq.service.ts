@@ -4,14 +4,10 @@ import * as chromeLauncher from 'chrome-launcher';
 import lighthouse from 'lighthouse';
 import { from, map, retry, tap } from 'rxjs';
 
-import {
-  DesktopConfig,
-  SimpleDesktopConfig,
-} from 'apps/check-agent/lighthouse-config/index';
+import { DesktopConfig } from 'apps/check-agent/lighthouse-config/index';
 import {
   DELARE_MONITOR_JOB_QUEUE_ARGS,
   DELARE_MONITOR_JOB_RESULT_QUEUE_ARGS,
-  IS_DEV,
   LOCATION,
 } from 'libs/constants/src/envs';
 import {
@@ -22,9 +18,8 @@ import {
   formatDateTimestamp,
   formatProgressMessage,
 } from 'libs/helpers/src/formaters';
-import { sleep } from 'libs/helpers/src/others';
 import { connectToRabbitmq } from 'libs/helpers/src/rabbitmq';
-import { get, range } from 'lodash';
+import { get } from 'lodash';
 import { promisify } from 'util';
 import { brotliCompress, gunzip } from 'zlib';
 const brotliCompressAsync = promisify(brotliCompress);

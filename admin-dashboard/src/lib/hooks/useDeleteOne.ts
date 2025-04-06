@@ -1,8 +1,8 @@
 import useHttpClient from '@/lib/hooks/useHttpClient'
-import type { IHasResource } from '@/types/has-resource'
+import type { IHasResource } from '@/lib/types/has-resource'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { toValue, type Ref } from 'vue'
-import type { IRecord } from '@/types/record'
+import type { IRecord } from '@/lib/types/record'
 
 type IUseDeleteOneOptions = IHasResource & { id: string | Ref<string> }
 

@@ -5,7 +5,7 @@ import { RedisModule } from 'apps/scheduler/src/redis/redis.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MONGO_URL } from 'libs/constants/src/envs';
 import { RabbitmqService } from 'apps/scheduler/src/rabbitmq/rabbitmq.service';
-import { forkJoin, mergeMap } from 'rxjs';
+import { forkJoin } from 'rxjs';
 import { RedisService } from 'apps/scheduler/src/redis/redis.service';
 import { ScheduleModule } from '@nestjs/schedule';
 

@@ -1,4 +1,4 @@
-import { MonitorDocument } from 'apps/central-web-server/src/api/monitor/schemas/monitor.schema';
+import { MonitorDocument } from 'apps/central-web-server/src/api/site/schemas/monitor.schema';
 import { ProjectDocument } from 'apps/central-web-server/src/api/project/schemas/project.schema';
 import {
   Relations,

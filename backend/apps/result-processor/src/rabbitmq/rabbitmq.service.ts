@@ -11,16 +11,10 @@ import { formatProgressMessage } from 'libs/helpers/src/formaters';
 import { connectToRabbitmq } from 'libs/helpers/src/rabbitmq';
 import { chunk, get, last, min } from 'lodash';
 import { promisify } from 'util';
-import { brotliCompress, brotliDecompress } from 'zlib';
+import { brotliDecompress } from 'zlib';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectConnection } from '@nestjs/mongoose';
-import {
-  AnyBulkWriteOperation,
-  Collection,
-  Connection,
-  PipelineStage,
-  Types,
-} from 'mongoose';
+import { Collection, Connection, Types } from 'mongoose';
 import { LIGHTHOUSE_CATEGORIES } from 'libs/constants/src/others';
 import {
   ICheckRunResult,

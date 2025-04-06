@@ -4,7 +4,7 @@ import FormActions from '@/lib/components/common/FormActions.vue'
 import useCreateOne from '@/lib/hooks/useCreateOne'
 import useGetOne from '@/lib/hooks/useGetOne'
 import useUpdateOne from '@/lib/hooks/useUpdateOne'
-import type { IRecord } from '@/types/record'
+import type { IRecord } from '@/lib/types/record'
 import {
   NForm,
   NFormItem,

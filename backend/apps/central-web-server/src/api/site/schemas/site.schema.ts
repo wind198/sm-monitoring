@@ -1,5 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { MonitorDocument } from 'apps/central-web-server/src/api/monitor/schemas/monitor.schema';
+import {
+  MonitorDocument,
+  MonitorSchema,
+} from 'apps/central-web-server/src/api/site/schemas/monitor.schema';
 import { ProjectDocument } from 'apps/central-web-server/src/api/project/schemas/project.schema';
 import { IIsActive } from 'apps/central-web-server/src/common/types/is-active';
 import { ISoftDeletable } from 'apps/central-web-server/src/common/types/soft-deletable';
@@ -54,7 +57,10 @@ export class Site implements ISoftDeletable {
   relations: Relations;
 
   @Prop()
-  deletedAt?: Date;
+  deletedAt: Date;
+
+  @Prop({ type: [MonitorSchema], default: [] })
+  sites: SiteDocument[];
 }
 
 export type SiteDocument = Site & Document;

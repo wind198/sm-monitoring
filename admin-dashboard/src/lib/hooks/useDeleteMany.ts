@@ -1,11 +1,11 @@
 import { get } from 'lodash-es'
 import useHttpClient from '@/lib/hooks/useHttpClient'
-import type { IHasResource } from '@/types/has-resource'
+import type { IHasResource } from '@/lib/types/has-resource'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { toValue, type Ref } from 'vue'
 import { removeNullFieldsFromObject } from '@/lib/helpers/others'
 import { stringify } from 'qs'
-import type { IRecord } from '@/types/record'
+import type { IRecord } from '@/lib/types/record'
 
 type IUseDeleteManyOptions = IHasResource & { ids: string[] | Ref<string[]> }
 

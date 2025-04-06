@@ -1,29 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { LocationDocument } from 'apps/central-web-server/src/api/location/schemas/location.schema';
-import { ProjectDocument } from 'apps/central-web-server/src/api/project/schemas/project.schema';
-import { SiteDocument } from 'apps/central-web-server/src/api/site/schemas/site.schema';
 import { ISoftDeletable } from 'apps/central-web-server/src/common/types/soft-deletable';
 import { ILighthouseScores } from 'libs/types/src/check';
 import mongoose, { HydratedDocument } from 'mongoose';
-
-@Schema({ _id: false })
-export class Relations {
-  @Prop({
-    required: true,
-    ref: 'Project',
-    type: mongoose.SchemaTypes.ObjectId,
-  })
-  project: ProjectDocument;
-
-  @Prop({
-    required: true,
-    ref: 'Site',
-    type: mongoose.SchemaTypes.ObjectId,
-  })
-  site: SiteDocument;
-}
-
-const RelationSchema = SchemaFactory.createForClass(Relations);
 
 @Schema({ _id: false })
 export class Metadata {
@@ -66,9 +45,6 @@ export class Monitor implements ISoftDeletable {
 
   @Prop({ type: LatestDataSchema, default: { scoreHistory: [] } })
   latestData: LatestData;
-
-  @Prop({ required: true, type: RelationSchema })
-  relations: Relations;
 }
 
 export type MonitorDocument = HydratedDocument<Monitor>;

@@ -17,6 +17,15 @@ export const DEFAULT_SP_ADMIN_EMAIL =
   process.env.DEFAULT_SP_ADMIN_EMAIL || 'tuanbk1908@gmail.com';
 export const DEFAULT_SP_ADMIN_PASSWORD =
   process.env.DEFAULT_SP_ADMIN_PASSWORD || 'password';
+
+export const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY || 'jwt-secret';
+export const AUTH_TOKEN_EXPIRATION_TIME =
+  process.env.AUTH_TOKEN_EXPIRATION_TIME || '7d';
+
+export const DEFAULT_SUPER_USER_EMAIL =
+  process.env.DEFAULT_SUPER_USER_EMAIL || 'tuanbk1908@gmail.com';
+export const DEFAULT_SUPER_USER_PASSWORD =
+  process.env.DEFAULT_SUPER_USER_PASSWORD || 'password';
 /** CENTRAL WEB API */
 
 /** SCHEDULER */

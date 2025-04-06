@@ -1,6 +1,6 @@
 import useHttpClient from '@/lib/hooks/useHttpClient'
-import type { IHasResource } from '@/types/has-resource'
-import type { IRecord } from '@/types/record'
+import type { IHasResource } from '@/lib/types/has-resource'
+import type { IRecord } from '@/lib/types/record'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 
 type IUseCreateOneOptions = IHasResource

@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { UserService } from 'apps/central-web-server/src/api/user/user.service';
 import { compare } from 'bcrypt';
+import { AUTH_TOKEN_EXPIRATION } from 'libs/constants/src/envs';
 
 @Injectable()
 export class AuthService {
@@ -12,13 +13,7 @@ export class AuthService {
 
   async generateAuthToken(payload: any) {
     return await this.jwtService.signAsync(payload, {
-      expiresIn: '5m',
-    } as JwtSignOptions);
-  }
-
-  async generateRefreshToken(payload: any) {
-    return await this.jwtService.signAsync(payload, {
-      expiresIn: '5m',
+      expiresIn: AUTH_TOKEN_EXPIRATION,
     } as JwtSignOptions);
   }
 
@@ -43,15 +38,11 @@ export class AuthService {
       email,
       type: user.type,
     };
-    const [authToken, refreshToken] = await Promise.all([
-      this.generateAuthToken(tokenPayload),
-      this.generateRefreshToken(tokenPayload),
-    ]);
+    const authToken = await this.generateAuthToken(tokenPayload);
     const { password, ...o } = user.toObject();
 
     return {
       authToken,
-      refreshToken,
       userAuthData: o,
     };
   }

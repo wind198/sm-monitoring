@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { MonitorDocument } from 'apps/central-web-server/src/api/monitor/schemas/monitor.schema';
+import { MonitorDocument } from 'apps/central-web-server/src/api/site/schemas/monitor.schema';
 import { ILighthouseScores } from 'libs/types/src/check';
 import mongoose, { HydratedDocument } from 'mongoose';
 
